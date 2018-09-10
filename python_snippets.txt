@@ -1,0 +1,72 @@
+From above chart we can see Demand is high for properties below $100 / night or $225-$385/ night.Lot of Zipcodes clustered above 80% demand indicates that  $250 - $350 is the best pricing band. 
+
+Assuming no impacts from external factors (like seasonality, attractions etc) investing in new properties would increase supply decrease demand.Hence zipcode with demand above 80% is ideal for investment and the demand comes down it could still be around 70% occupancy rate that we are assuming/aiming for. Based on this Zipcodes 10308,11215,10201,11217,10028 etc are top contenders.
+
+
+
+C:\\Users\\Shashi\\airbnb-zillow-data-challenge-master\\Zip_Zhvi_2bedroom.csv.zip
+
+# working code
+test2=abnb_cleansed[['review_scores_rating','number_of_reviews']].groupby('zipcode').agg({'review_scores_rating':np.median,'number_of_reviews':np.sum})
+test2.columns=['median_score','tot_reviews']
+test3=test2.median_score*test2.tot_reviews
+
+test=pd.DataFrame(abnb_cleansed['review_scores_rating'].median(axis=0,level=0))
+test.insert(loc=1,column='tot_reviews',value=(abnb_cleansed['number_of_reviews'].sum(axis=0,level=0)))
+
+abnb_cleansed.loc[(abnb_cleansed.state=='NY') & (abnb_cleansed.bedrooms==2)&(abnb_cleansed.availability_365>350)].groupby('zipcode').agg({'price':['median','count']})
+
+price_stats=abnb_cleansed.groupby('zipcode').price.describe().reset_index()
+price_stats.sort_values(['mean'],ascending=False)
+
+#x=pd.DataFrame(abnb_cleansed.loc[:,('number_of_reviews','review_scores_rating')])
+#x['listing_count']=x.groupby('zipcode').size()
+#abnb_cleansed[['availability_365','availability_30','availability_60','availability_90']].loc[abnb_cleansed.availability_365==0].groupby(['availability_365','availability_30','availability_60','availability_90']).sum()
+#abnb_cleansed.groupby(['availability_365','availability_30','availability_60','availability_90']).count()
+
+test.reset_index(inplace=True)
+test['zipcode']=pd.to_numeric((test['zipcode']), errors='coerce').astype('int64')
+test.set_index('zipcode',inplace=True)
+test.drop(['level_0','index'],axis=1,inplace=True)
+
+#zllw_prices.sort_index(0)
+#zllw_prices.loc[10025]
+
+NY_Cities=['New York','Astoria, New York','Brooklyn, New York','New York City','Chelsea, New York', 'New York ', 'Brooklyn NY','NY','new york','Brooklyn, new York ']
+x=abnb_cleansed.zipcode.loc[abnb_cleansed.city.isin(NY_Cities)].unique().tolist()
+x.sort
+
+#pbya_plot.line(x='availability_90',y='price',source=pbya,line_width=1,color="navy",alpha=0.5)
+
+#xdf=final_df.copy()
+#final_df['demand_band']='low'
+#final_df['demand_band'].loc[final_df['demand']>= 0.8]='high'
+#final_df['demand_band'].loc[(final_df['demand']< 0.8) & (final_df['demand'] >= 0.6)]='medium'
+#final_df['popularity_band']='low'
+#final_df['popularity_band'].loc[final_df['popularity']>75]= 'high'
+#final_df['popularity_band'].loc[(final_df['popularity']<75) & (final_df['popularity']>19)]= 'medium'
+
+
+#zzip=zllw_df.loc[zllw_df.state=='NY'].groupby('zipcode').agg({'2017-06':np.median})
+x=pd.DataFrame(abnb_df[['zipcode','price','city','state']])
+x['zipcode']=pd.to_numeric((x['zipcode'].str.strip().str[:5]),errors='coerce').fillna(0).astype('int64')
+azip=pd.DataFrame(x.groupby('zipcode').agg({'price':np.size,'city':np.max,'state':np.max}))
+bzip=azip.loc[(azip.state=='NY')]
+
+
+#abnb_df['city']=abnb_df['city'].str.strip().str.upper()
+#mask = (abnb_df.city =='CHELSEA, NEW YORK')# (abnb_df.city =='NY')
+#column_name = 'city'
+#abnb_df.loc[mask,column_name]='NEW YORK'
+#abnb_df.groupby('city').sum()
+
+#abnb_df['city'].loc[(abnb_df['city']=='CHELSEA, NEW YORK')]='NEW YORK'
+#abnb_df['city'].loc[(abnb_df['city']=='NY')]='NEW YORK'
+#abnb_df['city'].loc[(abnb_df['city']=='PARK SLOPE ,BROOKLYN')]='BROOKLYN'
+#abnb_df['city'].loc[(abnb_df['city']=='PARK SLOPE, BROOKLYN')]='BROOKLYN'
+#abnb_df['city'].loc[(abnb_df['city']=='STATENISLAND')]='STATEN ISLAND'
+#since JAMAICA is a neighbourhood in QUEENS
+#abnb_df['city'].loc[(abnb_df['city']=='JAMAICA')]='QUEENS'
+#abnb_df.loc[abnb_df.bedrooms==2].groupby(['property_type']).size()
+
+abnb_cleansed[['number_of_reviews','review_scores_rating']].loc[abnb_cleansed.index ==11215].count()
